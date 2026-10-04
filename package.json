@@ -1,0 +1,12 @@
+{
+  "name":"md2pdf","version":"2.0.0","private":true,
+  "description":"Modern, privacy-first Markdown to PDF web app.",
+  "type":"module",
+  "scripts":{"dev":"vite","start":"vite","build":"vite build","preview":"vite preview","test":"vitest run","test:watch":"vitest"},
+  "dependencies":{
+    "@codemirror/lang-markdown":"^6.5.2","@codemirror/theme-one-dark":"^6.1.3","@uiw/react-codemirror":"^4.25.12",
+    "github-markdown-css":"^5.9.0","highlight.js":"^11.12.0","mermaid":"^11.17.2","react":"^19.3.0","react-dom":"^19.3.0",
+    "react-markdown":"^10.1.0","rehype-highlight":"^7.0.2","rehype-raw":"^7.0.0","rehype-sanitize":"^6.0.0","rehype-slug":"^6.0.0","remark-gfm":"^4.0.1","styled-components":"^6.1.19"
+  },
+  "devDependencies":{"@vitejs/plugin-react":"^6.1.1","@testing-library/jest-dom":"^6.9.1","@testing-library/react":"^16.3.1","vite":"^8.0.10","vitest":"^3.2.4","jsdom":"^27.0.0"}
+}
