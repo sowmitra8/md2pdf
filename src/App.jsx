@@ -16,8 +16,6 @@ const schema = {
   ...defaultSchema,
   protocols: { ...defaultSchema.protocols, a: [...(defaultSchema.protocols?.a || []), 'https', 'http', 'mailto'] }
 };
-const SAMPLE = '# Markdown to PDF\n\n> Private Markdown conversion in your browser.\n\n## Features\n\n- **GitHub-flavored Markdown**\n- Tables and task lists\n- Syntax-highlighted code\n- Mermaid diagrams\n- Responsive editor and preview\n- No server upload\n\n| Feature | Status |\n| --- | --- |\n| Markdown | ✅ |\n| PDF export | ✅ |\n| Privacy | ✅ |\n\n\`\`\`mermaid\ngraph TD\n  A[Markdown] --> B[Preview]\n  B --> C[Print to PDF]\n\`\`\`';
-
 function titleFromMarkdown(text) {
   const match = text.match(/^#\\s+(.+)$/m);
   return match?.[1]?.trim() || 'document';
