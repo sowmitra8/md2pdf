@@ -16,28 +16,26 @@ const schema = {
   ...defaultSchema,
   protocols: { ...defaultSchema.protocols, a: [...(defaultSchema.protocols?.a || []), 'https', 'http', 'mailto'] }
 };
-const SAMPLE = '# Markdown to PDF\n\n> Private Markdown conversion in your browser.\n\n## Features\n\n- **GitHub-flavored Markdown**\n- Tables and task lists\n- Syntax-highlighted code\n- Mermaid diagrams\n- Responsive editor and preview\n- No server upload\n\n| Feature | Status |\n| --- | --- |\n| Markdown | ✅ |\n| PDF export | ✅ |\n| Privacy | ✅ |\n\n\`\`\`mermaid\ngraph TD\n  A[Markdown] --> B[Preview]\n  B --> C[Print to PDF]\n\`\`\`';
-
 function titleFromMarkdown(text) {
   const match = text.match(/^#\\s+(.+)$/m);
   return match?.[1]?.trim() || 'document';
 }
 
 export default function App() {
-  const [source, setSource] = useState(() => localStorage.getItem('md2pdf:draft') || SAMPLE);
+  const [source, setSource] = useState('');
   const [dark, setDark] = useState(() => localStorage.getItem('md2pdf:theme') === 'dark');
   const [mobileMode, setMobileMode] = useState('editor');
-  useEffect(() => localStorage.setItem('md2pdf:draft', source), [source]);
   useEffect(() => {
     document.documentElement.dataset.theme = dark ? 'dark' : 'light';
     localStorage.setItem('md2pdf:theme', dark ? 'dark' : 'light');
   }, [dark]);
   const stats = useMemo(() => ({ words: (source.match(/\\b[\\w’'-]+\\b/g) || []).length, chars: source.length }), [source]);
+  const clearDocument = () => { setSource(''); setMobileMode('editor'); };
   const exportPdf = () => { const previous = document.title; document.title = titleFromMarkdown(source); window.print(); setTimeout(() => { document.title = previous; }, 1000); };
   const importFile = (event) => { const file = event.target.files?.[0]; if (!file) return; if (file.size > 2 * 1024 * 1024) { alert('Please choose a Markdown file under 2 MB.'); return; } const reader = new FileReader(); reader.onload = () => setSource(String(reader.result || '')); reader.readAsText(file); event.target.value = ''; };
   const components = { code({ className, children, ...props }) { const lang = /language-(\\w+)/.exec(className || ''); const value = String(children).replace(/\\n$/, ''); if (lang?.[1] === 'mermaid') return <Mermaid source={value} />; return <code className={className} {...props}>{children}</code>; } };
   return <div className="app-shell">
-    <header className="toolbar no-print"><div className="brand"><span className="brand-mark">M</span><span>md2pdf</span><small>private by design</small></div><div className="actions"><label className="button secondary">Import .md<input hidden type="file" accept=".md,text/markdown" onChange={importFile} /></label><button className="button primary" onClick={exportPdf}>Export to PDF</button><button className="icon-button" onClick={() => setDark(v => !v)} aria-label="Toggle theme">{dark ? '☀' : '☾'}</button></div></header>
+    <header className="toolbar no-print"><div className="brand"><span className="brand-mark">M</span><span>md2pdf</span><small>private by design</small></div><div className="actions"><label className="button secondary">Import .md<input hidden type="file" accept=".md,text/markdown" onChange={importFile} /></label><button className="button secondary" onClick={clearDocument} disabled={!source.trim()} aria-label="Remove loaded Markdown">Clear</button><button className="button primary" onClick={exportPdf} disabled={!source.trim()}>Export to PDF</button><button className="icon-button" onClick={() => setDark(v => !v)} aria-label="Toggle theme">{dark ? '☀' : '☾'}</button></div></header>
     <div className="mobile-tabs no-print"><button className={mobileMode === 'editor' ? 'active' : ''} onClick={() => setMobileMode('editor')}>Editor</button><button className={mobileMode === 'preview' ? 'active' : ''} onClick={() => setMobileMode('preview')}>Preview</button></div>
     <main className="workspace">
       <section className={'editor-pane mobile-' + mobileMode}><div className="pane-head no-print"><span>Markdown</span><span>{stats.words} words · {stats.chars} chars</span></div><CodeMirror value={source} extensions={[markdown()]} theme={dark ? oneDark : undefined} onChange={setSource} basicSetup={{ lineNumbers: true, foldGutter: true, autocompletion: true, searchKeymap: true }} /></section>
